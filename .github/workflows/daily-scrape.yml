@@ -24,10 +24,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         
-    - name: Write credentials.json from secret
-        run: |
-          echo "${{ secrets.GOOGLE_CREDS_JSON }}" > credentials_raw.json
-          python -c "import json; import sys; json.dump(json.loads(open('credentials_raw.json').read()), open('credentials.json', 'w'))"
+    - name: 🔐 Create credentials.json from secret
+      run: |
+        printf "%s" "${{ secrets.GOOGLE_CREDS_JSON }}" > credentials_raw.json
+        python -c "import json; open('credentials.json', 'w').write(json.dumps(json.loads(open('credentials_raw.json').read())))"
 
     - name: Run scraper
       env:
