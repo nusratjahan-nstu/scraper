@@ -1,26 +1,44 @@
+name: Daily Martplus Scraper
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs every day at 00:00 UTC
+  workflow_dispatch:     # Allows manual run
+
 jobs:
-  run:
+  run-scraper:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout repo
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
 
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-
-      - name: Write credentials.json from secret
+    - name: Install dependencies
+      run: |
+        pip install requests beautifulsoup4 pandas gspread python-dotenv
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Write credentials.json from secret
         run: |
           echo "${{ secrets.GOOGLE_CREDS_JSON }}" > credentials_raw.json
           python -c "import json; import sys; json.dump(json.loads(open('credentials_raw.json').read()), open('credentials.json', 'w'))"
 
+    - name: Run scraper
+      env:
+        SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+        SHEET_NAME: ${{ secrets.SHEET_NAME }}
+        GOOGLE_CREDS_JSON: ${{ secrets.GOOGLE_CREDS_JSON }}
+      run: python scraper.py
+      
       - name: Run script
         env:
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
           SHEET_NAME: ${{ secrets.SHEET_NAME }}
         run: python main.py
+   
