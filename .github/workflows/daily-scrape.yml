@@ -30,8 +30,7 @@ jobs:
         SHEET_NAME: ${{ secrets.SHEET_NAME }}
         GOOGLE_CREDS_JSON: ${{ secrets.GOOGLE_CREDS_JSON }}
       run: python scraper.py
-      name: Scrape and Upload to Google Sheets
-
+      
     - name: Run Python script
       run: |
         python main.py
