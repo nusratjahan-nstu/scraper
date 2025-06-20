@@ -28,7 +28,7 @@ jobs:
       run: |
         printf "%s" "${{ secrets.GOOGLE_CREDS_JSON }}" > credentials_raw.json
         python -c "import json; open('credentials.json', 'w').write(json.dumps(json.loads(open('credentials_raw.json').read())))"
-
+        
     - name: Run scraper
       env:
         SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
